@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Football GM</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── SETUP SCREEN ── -->
+  <div id="setup-screen">
+    <div class="setup-card">
+      <div class="setup-logo">⚽</div>
+      <h1>Football GM</h1>
+      <p class="setup-sub">Build your dynasty. Win the league.</p>
+      <div class="setup-form">
+        <label for="team-select">Choose your club</label>
+        <select id="team-select"></select>
+        <label for="manager-name">Manager name</label>
+        <input type="text" id="manager-name" placeholder="Your name" value="The Gaffer" />
+        <button id="start-btn" class="btn btn-primary btn-lg">Start Career</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN GAME UI ── -->
+  <div id="game-screen" class="hidden">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <span class="club-badge" id="hdr-badge">⚽</span>
+        <span class="club-name" id="hdr-club">Club Name</span>
+      </div>
+      <div class="topbar-center">
+        <span id="hdr-season">Season 1</span> &nbsp;·&nbsp;
+        <span id="hdr-matchday">Matchday 0 / 38</span>
+      </div>
+      <div class="topbar-right">
+        <span class="budget-label">Budget</span>
+        <span id="hdr-budget" class="budget-val">£0M</span>
+        <button class="new-game-btn" id="btn-new-game" title="Start a new career">New Game</button>
+      </div>
+    </header>
+
+    <!-- Nav tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="roster">Roster</button>
+      <button class="tab-btn" data-tab="standings">Standings</button>
+      <button class="tab-btn" data-tab="schedule">Schedule</button>
+      <button class="tab-btn" data-tab="transfers">Transfers</button>
+    </nav>
+
+    <!-- ── DASHBOARD TAB ── -->
+    <div id="tab-dashboard" class="tab-content active">
+      <div class="dash-grid">
+        <div class="card">
+          <h3>Club Overview</h3>
+          <div id="dash-overview"></div>
+        </div>
+        <div class="card">
+          <h3>Season Controls</h3>
+          <div class="controls">
+            <button id="btn-sim-day" class="btn btn-primary">▶ Simulate Matchday</button>
+            <button id="btn-sim-season" class="btn btn-secondary">⏩ Simulate Full Season</button>
+            <button id="btn-next-season" class="btn btn-accent hidden">🔄 Start Next Season</button>
+          </div>
+          <div id="dash-result" class="hidden"></div>
+        </div>
+        <div class="card">
+          <h3>Recent Results</h3>
+          <div id="dash-recent"></div>
+        </div>
+        <div class="card">
+          <h3>League Position</h3>
+          <div id="dash-position"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ROSTER TAB ── -->
+    <div id="tab-roster" class="tab-content hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3>Squad</h3>
+          <div class="filter-row">
+            <select id="roster-filter-pos">
+              <option value="ALL">All Positions</option>
+              <option value="GK">GK</option>
+              <option value="DEF">DEF</option>
+              <option value="MID">MID</option>
+              <option value="FWD">FWD</option>
+            </select>
+            <select id="roster-filter-type">
+              <option value="ALL">All Players</option>
+              <option value="real">⭐ Real Only</option>
+              <option value="gen">🎲 Generated Only</option>
+            </select>
+            <select id="roster-sort">
+              <option value="overall">Sort: Overall</option>
+              <option value="age">Sort: Age</option>
+              <option value="name">Sort: Name</option>
+              <option value="value">Sort: Value</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="roster-table">
+            <thead>
+              <tr>
+                <th>Name</th><th>Pos</th><th>Age</th><th>OVR</th><th>POT</th><th>Value</th><th>G</th><th>A</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="roster-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STANDINGS TAB ── -->
+    <div id="tab-standings" class="tab-content hidden">
+      <div class="card">
+        <h3>League Table — <span id="standings-season">Season 1</span></h3>
+        <div class="table-wrap">
+          <table class="data-table" id="standings-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th>
+                <th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+              </tr>
+            </thead>
+            <tbody id="standings-body"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text3);display:flex;gap:16px;">
+          <span><span style="color:var(--accent2)">━━</span> Champions League (Top 4)</span>
+          <span><span style="color:var(--warn)">╌╌</span> Europa League (Top 6)</span>
+          <span><span style="color:var(--danger)">━━</span> Relegation (Bottom 3)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCHEDULE TAB ── -->
+    <div id="tab-schedule" class="tab-content hidden">
+      <div class="card">
+        <div class="card-header">
+          <h3>Fixtures &amp; Results</h3>
+          <select id="schedule-filter">
+            <option value="all">All Matchdays</option>
+            <option value="played">Played</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="mine">My Matches</option>
+          </select>
+        </div>
+        <div id="schedule-list"></div>
+      </div>
+    </div>
+
+    <!-- ── TRANSFERS TAB ── -->
+    <div id="tab-transfers" class="tab-content hidden">
+      <div class="transfers-grid">
+        <div class="card">
+          <h3>Transfer Market</h3>
+          <div class="filter-row">
+            <select id="transfer-filter-pos">
+              <option value="ALL">All Positions</option>
+              <option value="GK">GK</option>
+              <option value="DEF">DEF</option>
+              <option value="MID">MID</option>
+              <option value="FWD">FWD</option>
+            </select>
+            <select id="transfer-filter-type">
+              <option value="ALL">All Players</option>
+              <option value="real">⭐ Real Only</option>
+              <option value="gen">🎲 Generated Only</option>
+            </select>
+            <select id="transfer-sort">
+              <option value="overall">Sort: Overall</option>
+              <option value="age">Sort: Age</option>
+              <option value="value">Sort: Value</option>
+            </select>
+            <input type="number" id="transfer-max-val" placeholder="Max £M" style="width:80px" />
+            <button class="btn btn-secondary btn-sm" id="transfer-search-btn">Search</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="transfer-table">
+              <thead>
+                <tr><th>Name</th><th>Club</th><th>Pos</th><th>Age</th><th>OVR</th><th>Value</th><th>Action</th></tr>
+              </thead>
+              <tbody id="transfer-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Sell Players</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="sell-table">
+              <thead>
+                <tr><th>Name</th><th>Pos</th><th>Age</th><th>OVR</th><th>Value</th><th>Action</th></tr>
+              </thead>
+              <tbody id="sell-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /game-screen -->
+
+  <!-- ── MODAL ── -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal-box">
+      <h3 id="modal-title">Confirm</h3>
+      <p id="modal-body"></p>
+      <div class="modal-btns">
+        <button id="modal-confirm" class="btn btn-primary">Confirm</button>
+        <button id="modal-cancel" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TOAST ── -->
+  <div id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/sim.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
